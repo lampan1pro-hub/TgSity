@@ -1,0 +1,218 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>TgCity</title>
+<style>
+:root{--bg:#0E1621;--card:#17212B;--card2:#1C2733;--line:#2A3644;--text:#F5F5F5;--muted:#7F91A4;--blue:#3390EC;--acc:#2B5278;--gold:#FFD67E;--green:#5CC96E;--red:#ff6b6b}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font:15px -apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif}
+.app{max-width:1080px;margin:auto;min-height:100vh;display:grid;grid-template-columns:210px 1fr}
+aside{padding:18px 10px;background:var(--card);border-right:1px solid var(--bg);position:sticky;top:0;height:100vh}
+.logo{font-size:21px;font-weight:900;padding:4px 10px 20px}.logo b{color:var(--blue)}
+nav{display:grid;gap:3px}nav button{border:0;background:transparent;color:var(--muted);text-align:left;padding:11px 12px;border-radius:10px;cursor:pointer;font-weight:600;font-size:14.5px}
+nav button:hover{background:var(--line);color:#fff}nav button.on{background:var(--acc);color:#fff;font-weight:800}
+.bd{background:var(--red);color:#fff;border-radius:12px;font-size:10.5px;padding:2px 7px;margin-left:4px}
+main{padding:20px}.top{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-bottom:14px;flex-wrap:wrap}
+.mini{font-size:11px;color:var(--muted);letter-spacing:.07em}.pill{background:var(--card);border:1px solid var(--line);padding:8px 13px;border-radius:10px;color:var(--gold);font-weight:800}
+.page{display:none}.page.on{display:block;animation:in .2s ease}@keyframes in{from{opacity:0;transform:translateY(5px)}to{opacity:1}}
+.stats{display:grid;grid-template-columns:repeat(5,1fr);gap:9px;margin-bottom:12px}
+.stat{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:12px}.stat small{color:var(--muted)}.stat b{display:block;font-size:19px;margin-top:3px}
+.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:11px}.grid4{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:14px;transition:border-color .15s}.card:hover{border-color:#3390EC55}
+.muted{color:var(--muted)}.section{display:flex;justify-content:space-between;align-items:center;margin:16px 0 9px}.section h2{font-size:17px;margin:0}
+.btn{border:0;border-radius:9px;padding:9px 13px;color:#fff;font-weight:800;cursor:pointer;background:var(--blue)}.btn:hover{filter:brightness(1.12)}
+.btn.alt{background:var(--line)}.btn.gold{background:#A1811C}.btn:disabled{opacity:.4;cursor:not-allowed}
+.btn.sm{padding:6px 10px;font-size:12.5px}
+/* === ГОРОД === */
+.map{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;background:var(--card);border:1px solid var(--line);border-radius:14px;padding:12px}
+.plot{aspect-ratio:1.35;border-radius:10px;display:grid;place-items:center;font-size:34px;background:var(--bg);border:1px dashed var(--line);cursor:pointer;position:relative;transition:transform .12s}
+.plot:hover{transform:translateY(-2px)}.plot i{font-style:normal}.plot b{position:absolute;bottom:4px;right:7px;font-size:10px;color:var(--muted)}
+.plot.empty{font-size:22px;color:var(--line)}.plot.filled{border-style:solid}.plot.sel{border-color:var(--blue);box-shadow:0 0 14px #3390EC77}.plot u{position:absolute;top:4px;left:7px;font-size:11px;color:var(--gold);text-decoration:none;font-weight:900}
+.feed{display:grid;gap:6px}.feed div{padding:9px 12px;background:var(--card);border:1px solid var(--line);border-radius:10px;color:#aab8c6;font-size:13.5px}
+.hbar{height:7px;background:var(--bg);border-radius:6px;overflow:hidden;margin-top:6px}.hbar i{display:block;height:100%;background:linear-gradient(90deg,#ff6b6b,#FFD67E,#5CC96E);width:50%;transition:.4s}
+/* === ЧАТ МЭРИИ === */
+.chat{display:grid;gap:10px;max-width:640px;margin:auto}
+.msg{display:flex;gap:9px;align-items:flex-end}.msg.me{flex-direction:row-reverse}
+.av{width:34px;height:34px;border-radius:50%;display:grid;place-items:center;font-size:13px;font-weight:900;color:#fff;flex:0 0 34px}
+.bub{max-width:78%;background:var(--card);border:1px solid var(--line);border-radius:13px 13px 13px 4px;padding:9px 12px;font-size:14px}
+.msg.me .bub{background:#2B5278;border-color:transparent;border-radius:13px 13px 4px 13px}
+.bub small{display:block;color:var(--blue);font-weight:800;font-size:11px;margin-bottom:2px}.msg.me .bub small{color:#9fc7ff}
+.sys{background:var(--card2);border:1px solid var(--line);border-radius:10px;padding:8px 12px;text-align:center;color:var(--muted);font-size:13px;max-width:90%;margin:auto}
+.kbd{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}.kbd .btn{font-size:12.5px;padding:7px 11px}
+.ok{color:var(--green);font-weight:800}.bad{color:var(--red);font-weight:800}
+/* === РЕЙТИНГ === */
+.row{display:flex;justify-content:space-between;align-items:center;gap:8px;padding:11px 13px;background:var(--card);border:1px solid var(--line);border-radius:11px}
+.row.me{border-color:#FFD67E88;background:#14293a}
+.toast{position:fixed;right:18px;bottom:18px;background:var(--card);border:1px solid var(--line);border-radius:12px;padding:12px 15px;display:none;z-index:30}.toast.show{display:block}
+.cf{position:fixed;left:50%;top:45%;width:8px;height:8px;border-radius:2px;pointer-events:none;z-index:40;animation:cf 1s ease-out forwards}
+@keyframes cf{to{transform:translate(var(--x),var(--y)) rotate(540deg);opacity:0}}
+@media(max-width:800px){.app{display:block}aside{height:auto;position:sticky;top:0;z-index:5;padding:8px;border-right:0;border-bottom:1px solid var(--bg)}nav{display:flex;overflow:auto}nav button{white-space:nowrap}.stats{grid-template-columns:repeat(2,1fr)}.grid,.grid4{grid-template-columns:repeat(2,1fr)}.map{grid-template-columns:repeat(3,1fr)}}
+@media(max-width:500px){.grid,.grid4{grid-template-columns:1fr}}
+</style></head>
+<body>
+<div class="app"><aside>
+<div class="logo">🏙️ <b>TgCity</b></div>
+<nav>
+<button class="on" data-p="city">🏙️ Мой город</button>
+<button data-p="build">🏗️ Строить</button>
+<button data-p="chat">💬 Мэрия <b class="bd" id="badge" style="display:none"></b></button>
+<button data-p="world">🌐 Города мира</button>
+</nav>
+<div style="margin:18px 4px;padding:12px;border:1px solid var(--line);border-radius:12px;background:var(--bg);font-size:13px" class="muted">Бюджет<br><b style="color:var(--gold);font-size:19px" id="sideB">⭐ 1200</b></div>
+</aside><main>
+<div class="top"><div class="mini">TG CITY / SIMULATOR</div><div style="display:flex;gap:8px;flex-wrap:wrap"><div class="pill" id="incP">+0.0⭐/с</div><div class="pill" id="hapP">🙂 55%</div><div class="pill" id="topB">⭐ 1200</div></div></div>
+
+<section class="page on" id="city">
+<div class="stats">
+<div class="stat"><small>Бюджет</small><b id="stB">⭐1200</b></div>
+<div class="stat"><small>Доход</small><b id="stI" style="color:var(--green)">+0/с</b></div>
+<div class="stat"><small>Жители</small><b id="stP">4</b></div>
+<div class="stat"><small>Счастье</small><b id="stH">🙂</b><div class="hbar"><i id="stHb"></i></div></div>
+<div class="stat"><small>Уровень города</small><b id="stL">1</b></div>
+</div>
+<div class="section"><h2>Район</h2><span class="muted">клик по зданию — выбрать · два одинаковых — соединить · повторный клик — снести</span></div>
+<div class="map" id="map"></div>
+<div style="text-align:center;margin-top:10px"><button class="btn gold" id="plotBtn" onclick="buyPlots()">+3 участка</button></div>
+<div class="section"><h2>Новости города</h2></div>
+<div class="feed" id="cfeed"></div>
+<div class="section"><button class="btn alt sm" onclick="resetGame()">Снести город и начать заново</button></div>
+</section>
+
+<section class="page" id="build"><div class="section"><h2>Строительство</h2><span class="muted">здания дают доход и влияют на счастье</span></div><div class="grid4" id="buildGrid"></div><p class="muted" style="margin-top:10px">🏠 Жильё привлекает жителей — жители платят налоги. Счастье умножает налоги: несчастный город платит вдвое меньше.</p></section>
+
+<section class="page" id="chat"><div class="section"><h2>💬 Чат мэрии</h2><span class="muted" id="chSub">жители пишут первыми</span></div><div class="chat" id="chatBox"></div></section>
+
+<section class="page" id="world"><div class="section"><h2>🌐 Города мира</h2><span class="muted">соревнование по населению</span></div><p class="muted" style="margin:0 0 10px" id="wr"></p><div class="feed" id="worldList"></div></section>
+</main></div>
+<div class="toast" id="toast"></div>
+
+<script>
+const K='tgcity_v1';
+const B=[
+ {e:'🏠',n:'Жилой дом',c:400,inc:0.6,hap:1,cap:8,lvl:1,ev:['🏠','🏡','🏘️','🏯','🏰'],d:'+8 мест, жители платят налоги'},
+ {e:'🌳',n:'Парк',c:700,inc:0.2,hap:5,lvl:1,ev:['🌳','⛲','🌷','🏞️','🌻'],d:'+5 счастья'},
+ {e:'☕',n:'Кафе',c:900,inc:1.4,hap:3,lvl:1,ev:['☕','🧁','🍽️','🍷','🎻'],d:'+0.7⭐/с, +3 счастья'},
+ {e:'🏢',n:'Офис',c:2500,inc:4.5,hap:-2,lvl:2,ev:['🏢','🏣','🏬','🏦','🏙️'],d:'+2.5⭐/с, −2 счастья'},
+ {e:'🏥',n:'Клиника',c:5000,inc:1.2,hap:6,lvl:2,ev:['🏥','🚑','💊','🧬','⚕️'],d:'+6 счастья'},
+ {e:'🏭',n:'Завод',c:9000,inc:11,hap:-6,lvl:3,ev:['🏭','🏗️','⚙️','🤖','🚀'],d:'+7⭐/с, −6 счастья'},
+ {e:'🎡',n:'Аттракционы',c:16000,inc:5.5,hap:8,lvl:4,ev:['🎡','🎢','🎪','🎠','💫'],d:'+3⭐/с, +8 счастья'},
+ {e:'🏦',n:'Банк',c:30000,inc:15,hap:0,lvl:5,ev:['🏦','🏧','💰','💎','🏛️'],d:'+9⭐/с'}
+];
+const personas=[
+ {n:'@Babushka_55',e:'👵'},{n:'@CryptoBro',e:'🚀'},{n:'@Sosedka_Olga',e:'🌷'},{n:'@Student_21',e:'🎓'},
+ {n:'@Ded_Sport',e:'🏋️'},{n:'@Mama_3detey',e:'🍼'},{n:'@Kot_Barsik',e:'🐱'},{n:'@Progger_Tea',e:'💻'}
+];
+const asks=[
+ {t:'Во дворе собаки без поводков! Сделайте площадку!',o:[['🌳 Построить площадку',400,7],['Собаки тоже жители',0,-4]]},
+ {t:'Откройте коворкинг, а то уезжаю в CityVille!',o:[['💼 Выделить помещение',600,6],['Пусть едет',0,-5]]},
+ {t:'Проведите бесплатный Wi-Fi в парке!',o:[['📡 Разумно',300,5],['Мобильный же есть',0,-3]]},
+ {t:'Мусор неделю не вывозят, одна вонь!',o:[['🚛 Срочный вывоз',250,6],['Это аромат свободы',0,-4]]},
+ {t:'Хочу фестиваль уличной еды у набережной!',o:[['🎪 Фестиваль!',1000,9],['Нет бюджета',0,-3]]},
+ {t:'Дороги в ямах, подвеска стонет!',o:[['🚧 Ремонт дорог',550,6],['Ездите медленнее',0,-4]]},
+ {t:'Завод дымит прямо в окна! Фильтры ставьте!',req:5,o:[['🧯 Фильтры',750,8],['Это просто облака',0,-6]]},
+ {t:'В клинике очередь на три часа!',req:4,o:[['👨‍⚕️ Новые врачи',900,7],['Подождут, здоровые же',0,-4]]}
+];
+const events=[
+ {t:'🔥 ПОЖАР в районе! Что делать, мэр?!',o:[['🚒 Пожарные ⭐500',500,'fire_ok'],['🌧 Надеюсь на дождь',0,'fire_bad']]},
+ {t:'🎊 Предложение: устроить городской фестиваль?',o:[['🎪 Устроить ⭐1200',1200,'fest'],['Не в этом году',0,'fest_no']]},
+ {t:'🤵 Инвестор хочет вложить ⭐3000 в город. Но жители не любят олигархов.',o:[['💰 Принять деньги',0,'invest'],['🚫 Отказать',0,'invest_no']]}
+];
+const rivals=[
+ {n:'CityVille',e:'🌃',pop:60,r:.09},{n:'NeoTokyo',e:'🗼',pop:140,r:.07},{n:'Babylon-7',e:'🏜️',pop:260,r:.055},{n:'Grustnograd',e:'🌫️',pop:45,r:.11}
+];
+let s=JSON.parse(localStorage.getItem(K)||'null');
+if(!s)s={budget:1200,pop:4,hap:55,plots:new Array(12).fill(null),msgs:[],reqs:[],last:Date.now(),evT:70,askT:35};
+s.plots=s.plots||new Array(12).fill(null);s.tiers=s.tiers||new Array(12).fill(1);s.plotBuys=s.plotBuys||0;while(s.tiers.length<12)s.tiers.push(1);s.msgs=s.msgs||[];s.reqs=s.reqs||[];
+const $=id=>document.getElementById(id);
+function rnd(n){return Math.floor(Math.random()*n)}
+function save(){s.last=Date.now();localStorage.setItem(K,JSON.stringify(s));render()}
+let tt;function toast(x){let e=$('toast');e.textContent=x;e.classList.add('show');clearTimeout(tt);tt=setTimeout(()=>e.classList.remove('show'),2400)}
+function sfx(f,d=.1){try{let c=sfx.c||(sfx.c=new AudioContext()),o=c.createOscillator(),g=c.createGain();o.type='sine';o.frequency.value=f;g.gain.setValueAtTime(.06,c.currentTime);g.gain.exponentialRampToValueAtTime(.001,c.currentTime+d);o.connect(g);g.connect(c.destination);o.start();o.stop(c.currentTime+d)}catch(e){}}
+function boom(c,n=22){for(let i=0;i<n;i++){let d=document.createElement('div');d.className='cf';d.style.background=c;d.style.setProperty('--x',(Math.random()*560-280)+'px');d.style.setProperty('--y',(Math.random()*-320+80)+'px');document.body.appendChild(d);setTimeout(()=>d.remove(),1100)}}
+function tgGrad(n){let p=['#ff845e,#d45246','#ff8aac,#d95574','#b694e8,#7e62d0','#5caffa,#408acf','#53edd6,#36b0a5','#72d5fd,#2a9ef1','#e579b9,#b9559d'];let h=0;for(let i=0;i<n.length;i++)h=(h*31+n.charCodeAt(i))>>>0;return 'linear-gradient(135deg,'+p[h%p.length]+')'}
+function log(x){s.msgs.push({k:'sys',t:x});if(s.msgs.length>40)s.msgs.shift()}
+function bCnt(i){return s.plots.filter(x=>x===i).length}
+function capacity(){let t=0;s.plots.forEach((p,k)=>{if(p===0)t+=8*(s.tiers[k]||1)});return t}
+function lvl(){return Math.min(5,1+Math.floor(s.pop/12))}
+function hapTarget(){let t=50;s.plots.forEach((p,k)=>{if(p!==null)t+=B[p].hap*(1+((s.tiers[k]||1)-1)*0.5)});t-=Math.max(0,s.reqs.length-1)*5;return Math.max(0,Math.min(100,t))}
+function income(){let t=0;s.plots.forEach((p,k)=>{if(p!==null){let ti=s.tiers[k]||1;t+=B[p].inc*ti*Math.pow(1.15,ti-1)}});return t+s.pop*0.45*(0.5+s.hap/120)}
+function face(h){return h<35?'😠':h<55?'😐':h<75?'🙂':'😄'}
+function go(id){document.querySelectorAll('.page').forEach(x=>x.classList.remove('on'));$(id).classList.add('on');document.querySelectorAll('nav button').forEach(x=>x.classList.toggle('on',x.dataset.p===id));render()}
+document.querySelectorAll('nav button').forEach(b=>b.onclick=()=>go(b.dataset.p));
+/* === СТРОЙКА === */
+function build(i){let b=B[i];if(lvl()<b.lvl)return toast('Нужен уровень города '+b.lvl);let slot=s.plots.indexOf(null);if(slot<0)return toast('Все участки заняты — снеси что-то');if(s.budget<b.c)return toast('Не хватает ⭐ — нужно '+b.c);s.budget-=b.c;s.plots[slot]=i;s.tiers[slot]=1;sfx(600);boom('#5CC96E',18);log('🏗️ Построено: '+b.e+' '+b.n);toast(b.n+' построено!');save()}
+function plotCost(){return Math.round(1000*Math.pow(2.2,s.plotBuys))}
+function buyPlots(){let c=plotCost();if(s.budget<c)return toast('Не хватает ⭐ — нужно '+c);s.budget-=c;s.plotBuys++;for(let i=0;i<3;i++){s.plots.push(null);s.tiers.push(1)}sfx(640);boom('#3390EC',20);log('🗺️ Куплено +3 участка за ⭐'+c);toast('+3 участка! Всего: '+s.plots.length);save()}
+let selK=null;
+function plotInc(p,t){return Math.round(B[p].inc*t*Math.pow(1.15,t-1)*10)/10}
+function clickPlot(k){let p=s.plots[k];
+ if(selK===null){if(p===null){go('build');return}selK=k;render();toast('Выбрано: '+B[p].n+' ×'+s.tiers[k]+'. Кликни такое же для слияния');return}
+ if(k===selK){selK=null;demolish(k);return}
+ let a=s.plots[selK],ta=s.tiers[selK];
+ if(p!==null&&a!==null&&p===a&&s.tiers[k]===ta){if(ta>=5){toast('Максимальный уровень ×5!');selK=k;render();return}let t=++s.tiers[k];s.plots[selK]=null;selK=null;sfx(760);boom('#5CC96E',24);log('✨ Слияние: '+B[p].n+' — уровень '+t+'!');toast('✨ '+B[p].n+' ур.'+t+' · '+plotInc(p,t)+'⭐/с');save();return}
+ if(p===null){selK=null;render();return}
+ selK=k;render();toast('Выбрано: '+B[p].n+' ×'+s.tiers[k]+'. Нужно такое же здание того же уровня')}
+function demolish(k){let i=s.plots[k];if(i===null)return go('build');let b=B[i],t=s.tiers[k]||1,ref=Math.floor(b.c*t*0.6);if(!confirm('Снести '+b.n+' ур.'+t+'? Вернутся ⭐'+ref))return;s.plots[k]=null;s.tiers[k]=1;s.budget+=ref;log('🧨 Снесено: '+b.n);save()}
+/* === ЧАТ / ПРОСЬБЫ === */
+function addAsk(){let free=asks.filter(a=>a.req===undefined||bCnt(a.req)>0);let a=JSON.parse(JSON.stringify(free[rnd(free.length)]));let p=personas[rnd(personas.length)];let r={id:Date.now()+Math.random(),pn:p.n,e:p.e,t:a.t,o:a.o,exp:150};s.reqs.push(r);s.msgs.push({k:'c',n:p.n,e:p.e,t:a.t,id:r.id});sfx(500,.06);if($('chat').classList.contains('on'))render();updateBadge();toast('💬 '+p.n+' пишет мэрии!')}
+function answer(id,oi){let r=s.reqs.find(x=>x.id===id);if(!r)return;let o=r.o[oi];let m=s.msgs.find(x=>x.id===id);
+ if(o[1]>s.budget){toast('Не хватает ⭐ в бюджете!');return}
+ s.budget-=o[1];s.hap=Math.max(0,Math.min(100,s.hap+o[2]));
+ if(m){m.res=o[2]>=0?'✅ Исполнено · счастье +'+o[2]:'❌ Отказ · счастье '+o[2]}
+ s.reqs=s.reqs.filter(x=>x.id!==id);
+ if(o[2]>=0){sfx(700);if(o[2]>=6)boom('#5CC96E',14)}else sfx(220,.15,'sawtooth');
+ log((o[2]>=0?'✅ ':'❌ ')+r.pn+': '+r.t.slice(0,40)+'…');save()}
+/* === СОБЫТИЯ === */
+let pendingEv=null;
+function fireEvent(){let ev=JSON.parse(JSON.stringify(events[rnd(events.length)]));pendingEv=ev;s.msgs.push({k:'ev',t:ev.t,o:ev.o});sfx(440,.15,'sawtooth');log('⚡ '+ev.t);if($('chat').classList.contains('on'))render();toast('⚡ Событие в городе!');updateBadge()}
+function answerEv(oi){let ev=pendingEv;if(!ev)return;let o=ev.o[oi];pendingEv=null;let m=s.msgs.filter(x=>x.k==='ev').pop();
+ if(o[1]>s.budget&&o[1]>0){pendingEv=ev;toast('Не хватает ⭐!');return}
+ s.budget-=o[1];let k=o[2];
+ if(k==='fire_ok'){s.hap=Math.min(100,s.hap+3);if(m)m.res='🚒 Пожар потушен. Город благодарит!';}
+ if(k==='fire_bad'){s.hap=Math.max(0,s.hap-8);let idx=s.plots.map((p,i)=>p!==null?i:-1).filter(i=>i>=0);if(idx.length){let k2=idx[rnd(idx.length)],bi=s.plots[k2];s.plots[k2]=null;if(m)m.res='🔥 Сгорело здание: '+B[bi].n}log('🔥 Пожар уничтожил здание!');boom('#ff6b6b',26);sfx(150,.3,'sawtooth')}
+ if(k==='fest'){s.hap=Math.min(100,s.hap+12);s.pop+=3;if(m)m.res='🎊 Фестиваль удался! +12 счастья, новые жители';boom('#FFD67E',26)}
+ if(k==='fest_no'){s.hap=Math.max(0,s.hap-2);if(m)m.res='Грустно… но сэкономили.'}
+ if(k==='invest'){s.budget+=3000;s.hap=Math.max(0,s.hap-6);if(m)m.res='💰 +⭐5000, но жители недовольны';boom('#FFD67E',20)}
+ if(k==='invest_no'){s.hap=Math.min(100,s.hap+2);if(m)m.res='Гордость дороже денег. +2 счастья'}
+ save()}
+/* === ТИК === */
+function tick(){let inc=income();s.budget+=inc;
+ let cap=capacity(),want=cap*(0.35+s.hap/100*1.1);
+ s.pop+= (want-s.pop)*0.02; if(s.hap<25)s.pop=Math.max(0,s.pop-0.25);
+ s.hap+=(hapTarget()-s.hap)*0.015;
+ s.reqs.forEach(r=>{r.exp-=1;if(r.exp<=0){s.hap=Math.max(0,s.hap-3);s.pop=Math.max(0,s.pop-1);let m=s.msgs.find(x=>x.id===r.id);if(m)m.res='⏰ Игнор… житель ушёл в петицию';log('⏰ '+r.pn+' не дождался ответа');}});
+ s.reqs=s.reqs.filter(r=>r.exp>0);
+ s.askT-=1;if(s.askT<=0){s.askT=45+rnd(45);if(s.reqs.length<3)addAsk()}
+ s.evT-=1;if(s.evT<=0&&!pendingEv){s.evT=110+rnd(80);fireEvent()}
+ rivals.forEach(r=>{r.pop*=1+r.r/60/(1+r.pop/300)});
+ let f=Math.floor(s.budget);$('sideB').textContent='⭐ '+f;$('topB').textContent='⭐ '+f;$('incP').textContent='+'+inc.toFixed(1)+'⭐/с';$('hapP').textContent=face(s.hap)+' '+Math.round(s.hap)+'%';
+ if($('city').classList.contains('on')||$('build').classList.contains('on'))render()}
+setInterval(tick,1000);setInterval(save,12000);
+function updateBadge(){let b=$('badge'),n=s.reqs.length+(pendingEv?1:0);b.style.display=n?'inline-block':'none';b.textContent=n}
+/* === РЕНДЕР === */
+function render(){let f=Math.floor(s.budget),inc=income(),cap=capacity();
+ $('stB').textContent='⭐'+f;$('stI').textContent='+'+inc.toFixed(1)+'/с';$('stP').textContent=Math.floor(s.pop)+' / '+cap;
+ $('stH').textContent=face(s.hap);$('stHb').style.width=s.hap+'%';$('stL').textContent=lvl();
+ $('map').innerHTML=s.plots.map((p,k)=>{if(p===null)return `<div class="plot empty" onclick="clickPlot(${k})">＋</div>`;let t=s.tiers[k]||1;return `<div class="plot filled ${selK===k?'sel':''}" onclick="clickPlot(${k})"><i>${B[p].ev[t-1]||B[p].e}</i>${t>1?`<u>×${t}</u>`:''}<b>+${plotInc(p,t)}⭐</b></div>`}).join('');
+ $('buildGrid').innerHTML=B.map((b,i)=>{let lock=lvl()<b.lvl;return `<div class="card" style="${lock?'opacity:.5':''}"><div style="font-size:36px">${b.e}</div><b>${b.n}</b>${bCnt(i)?` <span class="muted">×${bCnt(i)}</span>`:''}<div class="muted" style="margin:5px 0">${b.d}</div>${lock?`<button class="btn alt" disabled>🔒 Уровень ${b.lvl}</button>`:`<button class="btn" onclick="build(${i})">⭐ ${b.c}</button>`}</div>`}).join('');
+ $('plotBtn').textContent='+3 участка за ⭐'+plotCost()+' ('+s.plots.length+' всего)';
+ $('cfeed').innerHTML=s.msgs.slice(-8).reverse().map(m=>'<div>'+m.t+'</div>').join('')||'<div>Пока тихо…</div>';
+ let me={n:'Твой город 🏙️',pop:Math.floor(s.pop)};
+ let list=rivals.concat([me]).sort((a,b)=>b.pop-a.pop);
+ $('worldList').innerHTML=list.map((r,i)=>`<div class="row ${r===me?'me':''}"><span>${i<3?['🥇','🥈','🥉'][i]:'#'+(i+1)} ${r.e||'🏙️'} <b>${r.n}</b></span><b>${Math.floor(r.pop)} жителей</b></div>`).join('');
+ let my=list.indexOf(me);$('wr').textContent=my===0?'🏆 Твой город — крупнейший в мире!':'Ты на '+(my+1)+' месте. До лидера: '+(Math.floor(list[0].pop)-Math.floor(s.pop))+' жителей.';
+ renderChat();updateBadge()}
+function renderChat(){let box=$('chatBox');if(!box)return;
+ box.innerHTML=s.msgs.slice(-25).map(m=>{
+  if(m.k==='sys')return '<div class="sys">'+m.t+'</div>';
+  if(m.k==='ev')return '<div class="msg"><div class="av" style="background:'+tgGrad('event')+'">⚡</div><div class="bub"><small>Городская дежурная</small>'+m.t+(pendingEv&&m===s.msgs.filter(x=>x.k==='ev').pop()?'<div class="kbd">'+m.o.map((o,i)=>`<button class="btn ${o[1]?'':'alt'}" onclick="answerEv(${i})">${o[0]}</button>`).join('')+'</div>':'')+(m.res?'<div class="'+(m.res[0]==='✅'?'ok':'bad')+'" style="margin-top:6px">'+m.res+'</div>':'')+'</div></div>';
+  let p=personas.find(x=>x.n===m.n)||{e:m.e||'👤'};
+  return '<div class="msg"><div class="av" style="background:'+tgGrad(m.n)+'">'+(m.e||p.e)+'</div><div class="bub"><small>'+m.n+'</small>'+m.t+(m.res?'<div class="'+(m.res[0]==='✅'?'ok':m.res[0]==='⏰'?'':'bad')+'" style="margin-top:6px">'+m.res+'</div>':'')+(m.id&&s.reqs.find(r=>r.id===m.id)?'<div class="kbd">'+s.reqs.find(r=>r.id===m.id).o.map((o,i)=>`<button class="btn ${o[1]?'':'alt'}" onclick="answer(${m.id},${i})">${o[0]}</button>`).join('')+'</div>':'')+'</div></div>'}).join('');
+ box.scrollTop=box.scrollHeight;$('chSub').textContent=s.reqs.length?'⏰ ждут решения: '+s.reqs.length:'жители пишут первыми'}
+function resetGame(){if(confirm('Снести город и начать заново?')){localStorage.removeItem(K);location.reload()}}
+/* === ОФФЛАЙН === */
+let el=Math.min(28800,(Date.now()-s.last)/1000);
+if(el>30){s.budget+=income()*el*0.8;for(let k=0;k<Math.min(3,Math.floor(el/600));k++){let free=asks.filter(a=>a.req===undefined||bCnt(a.req)>0);let a=free[rnd(free.length)];let p=personas[rnd(personas.length)];s.reqs.push({id:Date.now()+Math.random()+k,pn:p.n,e:p.e,t:a.t,o:a.o,exp:150});s.msgs.push({k:'c',n:p.n,e:p.e,t:a.t})}
+ setTimeout(()=>toast('🏙️ Пока тебя не было: +⭐'+Math.floor(income()*el*0.8)),600)}
+render();
+</script></body></html>
